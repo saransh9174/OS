@@ -108,6 +108,7 @@ int main() {
                 mark[i] = 1;
                 
             }
+            
         }
 
         if (burst_remaining[idx] > 0) {
