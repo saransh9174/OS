@@ -1,0 +1,40 @@
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+public class DeadlockSimulation {
+    private static final Lock lock1 = new ReentrantLock();
+    private static final Lock lock2 = new ReentrantLock();
+
+    public static void main(String[] args) {
+        Thread thread1 = new Thread(() -> {
+            lock1.lock();
+            System.out.println("Thread 1: Acquired lock1. Waiting for lock2...");
+            try {
+                Thread.sleep(1000); // Simulate some work
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            lock2.lock();
+            System.out.println("Thread 1: Acquired lock2.");
+            lock1.unlock();
+            lock2.unlock();
+        });
+
+        Thread thread2 = new Thread(() -> {
+            lock2.lock();
+            System.out.println("Thread 2: Acquired lock2. Waiting for lock1...");
+            try {
+                Thread.sleep(1000); // Simulate some work
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            lock1.lock();
+            System.out.println("Thread 2: Acquired lock1.");
+            lock2.unlock();
+            lock1.unlock();
+        });
+
+        thread1.start();
+        thread2.start();
+    }
+}
